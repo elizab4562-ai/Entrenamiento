@@ -1,13 +1,460 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Entrenamiento Personalizado</title>
-    <link rel="stylesheet" href="estilos.css">
+<meta charset="UTF-8">
+<title>Entrenamiento Interactivo</title>
+<style>
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+header {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 30px 10px;
+}
+header h1 {
+    margin: 0;
+    font-size: 2em;
+}
+header p {
+    margin: 5px 0 0 0;
+    font-style: italic;
+}
+main {
+    max-width: 900px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+section {
+    margin-bottom: 30px;
+}
+h2 {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 5px;
+}
+label {
+    display: block;
+    margin: 10px 0 5px 0;
+}
+input[type="text"], select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+button {
+    padding: 10px 20px;
+    margin-top: 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #2980b9;
+}
+#resultado {
+    padding: 15px;
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+ul {
+    margin: 10px 0 0 20px;
+}
+.frase {
+    font-style: italic;
+    color: #16a085;
+    margin-top: 10px;
+}
+.day {
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+.day h4 {
+    margin: 0;
+    background-color: #3498db;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+}
+.day ul {
+    display: none;
+    margin: 5px 0 0 20px;
+}
+#historial {
+    padding: 15px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+</style>
 </head>
 <body>
-    <h1>Bienvenido a tu Entrenamiento Personalizado</h1>
-    <p>Descubre tu tipo de entrenamiento ideal según tus objetivos y tipo de cuerpo.</p>
-    <button>Empezar Test</button>
-</body>
-</html>
+
+<header>
+    <h1>Entrenamiento Interactivo</h1>
+    <p>"La constancia vence lo que la suerte no puede"</p>
+</header>
+
+<main>
+    <section id="instrucciones">
+        <h2>Instrucciones</h2>
+        <p>Completa el cuestionario para obtener tu plan de entrenamiento semanal adaptado a tu tipo de cuerpo, objetivo y nivel de entrenamiento.</p>
+    </section>
+
+    <section id="cuestionario">
+        <h2>Cuestionario</h2>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" placeholder="Tu nombre">
+
+        <label for="tipoCuerpo">Tipo de cuerpo:</label>
+        <select id="tipoCuerpo">
+            <option value="">--Selecciona--</option>
+            <option value="ectomorfo">Ectomorfo</option>
+            <option value="mesomorfo">Mesomorfo</option>
+            <option value="endomorfo">Endomorfo</option>
+        </select>
+
+        <label for="objetivo">Objetivo principal:</label>
+        <select id="objetivo">
+            <option value="">--Selecciona--</option>
+            <option value="ganarMusculo">Ganar músculo</option>
+            <option value="perderGrasa">Perder grasa</option>
+            <option value="mantener">Mantener</option>
+        </select>
+
+        <label for="nivel">Nivel de entrenamiento:</label>
+        <select id="nivel">
+            <option value="">--Selecciona--</option>
+            <option value="principiante">Principiante</option>
+            <option value="intermedio">Intermedio</option>
+            <option value="avanzado">Avanzado</option>
+        </select>
+
+        <button onclick="generarRutina()">Generar rutina</button>
+    </section>
+
+    <section id="resultado" style="display:none;">
+        <h2>Tu rutina personalizada</h2>
+        <p id="mensajeResultado"></p>
+        <h3>Plan semanal:</h3>
+        <div id="planSemanal"></div>
+        <p id="metas"></p>
+        <p class="frase" id="fraseMotivacional"></p>
+        <button onclick="imprimirRutina()">Imprimir / Guardar</button>
+    </section>
+
+    <section id="historial" style="display:none;">
+        <h2>Historial de rutinas</h2>
+        <ul id="listaHistorial"></ul>
+    </section>
+</main>
+
+<script>
+const frases = [
+    "No te detengas hasta estar orgulloso.",
+    "El dolor de hoy es la fuerza de mañana.",
+    "Hazlo por ti, no por los demás.",
+    "Pequeños pasos cada día llevan a grandes cambios.",
+    "Tu único límite eres tú mismo."
+];
+
+const planes = {
+  ectomorfo: {
+    ganarMusculo: {
+      principiante: [
+        "Lunes: Tren superior 3x10",
+        "Martes: Cardio 20min",
+        "Miércoles: Tren inferior 3x10",
+        "Jueves: Cardio 20min",
+        "Viernes: Full body 3x8",
+        "Sábado: Descanso",
+        "Domingo: Caminata 30min"
+      ],
+      intermedio: [
+        "Lunes: Tren superior 4x12",
+        "Martes: Cardio 30min",
+        "Miércoles: Tren inferior 4x12",
+        "Jueves: HIIT 25min",
+        "Viernes: Full body 4x10",
+        "Sábado: Descanso activo",
+        "Domingo: Cardio 30min"
+      ],
+      avanzado: [
+        "Lunes: Full body intenso 5x12",
+        "Martes: HIIT 30min",
+        "Miércoles: Tren inferior 5x12",
+        "Jueves: Cardio 30min",
+        "Viernes: Full body 5x10",
+        "Sábado: HIIT 25min",
+        "Domingo: Descanso"
+      ]
+    },
+    perderGrasa: {
+      principiante: [
+        "Lunes: Cardio 20min",
+        "Martes: Fuerza 3x10",
+        "Miércoles: Caminata 30min",
+        "Jueves: Cardio 20min",
+        "Viernes: Fuerza 3x10",
+        "Sábado: Caminata larga 30-40min",
+        "Domingo: Descanso"
+      ],
+      intermedio: [
+        "Lunes: HIIT 25min",
+        "Martes: Fuerza 4x12",
+        "Miércoles: Cardio 30min",
+        "Jueves: HIIT 25min",
+        "Viernes: Fuerza 4x12",
+        "Sábado: Caminata larga 40min",
+        "Domingo: Descanso activo"
+      ],
+      avanzado: [
+        "Lunes: HIIT 30min",
+        "Martes: Fuerza 5x10",
+        "Miércoles: Cardio 30-40min",
+        "Jueves: HIIT 30min",
+        "Viernes: Fuerza 5x10",
+        "Sábado: Cardio 40min",
+        "Domingo: Descanso"
+      ]
+    },
+    mantener: {
+      principiante: [
+        "Lunes: Full body 3x10",
+        "Martes: Cardio 20min",
+        "Miércoles: Tren superior 3x10",
+        "Jueves: Cardio 20min",
+        "Viernes: Tren inferior 3x10",
+        "Sábado: Caminata ligera 20min",
+        "Domingo: Descanso"
+      ],
+      intermedio: [
+        "Lunes: Full body 4x12",
+        "Martes: Cardio 25min",
+        "Miércoles: Tren superior 4x10",
+        "Jueves: HIIT 20min",
+        "Viernes: Tren inferior 4x12",
+        "Sábado: Cardio 25-30min",
+        "Domingo: Descanso activo"
+      ],
+      avanzado: [
+        "Lunes: Full body intenso 5x12",
+        "Martes: HIIT 30min",
+        "Miércoles: Tren superior 5x10",
+        "Jueves: Cardio 30min",
+        "Viernes: Tren inferior 5x12",
+        "Sábado: HIIT 30min",
+        "Domingo: Descanso"
+      ]
+    }
+  },
+  mesomorfo: {
+    ganarMusculo: {
+      principiante: [
+        "Lunes: Full body 3x10",
+        "Martes: Cardio 20min",
+        "Miércoles: Tren superior 3x12",
+        "Jueves: Cardio 20min",
+        "Viernes: Tren inferior 3x12",
+        "Sábado: Descanso",
+        "Domingo: Caminata 30min"
+      ],
+      intermedio: [
+        "Lunes: Full body 4x12",
+        "Martes: HIIT 20min",
+        "Miércoles: Tren superior 4x12",
+        "Jueves: Cardio 30min",
+        "Viernes: Tren inferior 4x12",
+        "Sábado: HIIT 25min",
+        "Domingo: Descanso activo"
+      ],
+      avanzado: [
+        "Lunes: Full body 5x12",
+        "Martes: HIIT 30min",
+        "Miércoles: Tren superior 5x12",
+        "Jueves: Cardio 30min",
+        "Viernes: Tren inferior 5x12",
+        "Sábado: HIIT 30min",
+        "Domingo: Descanso"
+      ]
+    },
+    perderGrasa: {
+      principiante: [
+        "Lunes: Cardio 25min",
+        "Martes: Fuerza 3x10",
+        "Miércoles: Caminata 30min",
+        "Jueves: Cardio 25min",
+        "Viernes: Fuerza 3x10",
+        "Sábado: Caminata larga 30-40min",
+        "Domingo: Descanso"
+      ],
+      intermedio: [
+        "Lunes: HIIT 25min",
+        "Martes: Fuerza 4x12",
+        "Miércoles: Cardio 30min",
+        "Jueves: HIIT 25min",
+        "Viernes: Fuerza 4x12",
+        "Sábado: Cardio 40min",
+        "Domingo: Descanso activo"
+      ],
+      avanzado: [
+        "Lunes: HIIT 30min",
+        "Martes: Fuerza 5x10",
+        "Miércoles: Cardio 35min",
+        "Jueves: HIIT 30min",
+        "Viernes: Fuerza 5x10",
+        "Sábado: Cardio 45min",
+        "Domingo: Descanso"
+      ]
+    },
+    mantener: {
+      principiante: [
+        "Lunes: Full body 3x10",
+        "Martes: Cardio 20min",
+        "Miércoles: Tren superior 3x10",
+        "Jueves: Cardio 20min",
+        "Viernes: Tren inferior 3x10",
+        "Sábado: Caminata ligera 20min",
+        "Domingo: Descanso"
+      ],
+      intermedio: [
+        "Lunes: Full body 4x12",
+        "Martes: Cardio 25min",
+        "Miércoles: Tren superior 4x12",
+        "Jueves: HIIT 20min",
+        "Viernes: Tren inferior 4x12",
+        "Sábado: Cardio 25-30min",
+        "Domingo: Descanso activo"
+      ],
+      avanzado: [
+        "Lunes: Full body intenso 5x12",
+        "Martes: HIIT 30min",
+        "Miércoles: Tren superior 5x12",
+        "Jueves: Cardio 30min",
+        "Viernes: Tren inferior 5x12",
+        "Sábado: HIIT 30min",
+        "Domingo: Descanso"
+      ]
+    }
+  },
+  endomorfo: {
+    ganarMusculo: {
+      principiante: [
+        "Lunes: Full body 3x10",
+        "Martes: Cardio 15-20min",
+        "Miércoles: Tren superior 3x10",
+        "Jueves: Cardio 15-20min",
+        "Viernes: Tren inferior 3x10",
+        "Sábado: Caminata 30min",
+        "Domingo: Descanso"
+      ],
+      intermedio: [
+        "Lunes: Full body 4x12",
+        "Martes: HIIT 20min",
+        "Miércoles: Tren superior 4x12",
+        "Jueves: Cardio 25min",
+        "Viernes: Tren inferior 4x12",
+        "Sábado: HIIT 25min",
+        "Domingo: Descanso activo"
+      ],
+      avanzado: [
+        "Lunes: Full body intenso 5x12",
+        "Martes: HIIT 30min",
+        "Miércoles: Tren superior 5x12",
+        "Jueves: Cardio 30min",
+        "Viernes: Tren inferior 5x12",
+        "Sábado: HIIT 30min",
+        "Domingo: Descanso"
+      ]
+    },
+    perderGrasa: {
+      principiante: [
+        "Lunes: Caminata rápida 25min",
+        "Martes: Fuerza ligera 3x10",
+        "Miércoles: Cardio 20min",
+        "Jueves: Caminata rápida 25min",
+        "Viernes: Fuerza ligera 3x10",
+        "Sábado: Cardio 30min",
+        "Domingo: Descanso"
+      ],
+      intermedio: [
+        "Lunes: HIIT 25min",
+        "Martes: Fuerza 4x12",
+        "Miércoles: Cardio 30min",
+        "Jueves: HIIT 25min",
+        "Viernes: Fuerza 4x12",
+        "Sábado: Cardio 40min",
+        "Domingo: Descanso activo"
+      ],
+      avanzado: [
+        "Lunes: HIIT 30min",
+        "Martes: Fuerza 5x10",
+        "Miércoles: Cardio 35min",
+        "Jueves: HIIT 30min",
+        "Viernes: Fuerza 5x10",
+        "Sábado: Cardio 45min",
+        "Domingo: Descanso"
+      ]
+    },
+    mantener: {
+      principiante: [
+        "Lunes: Full body 3x10",
+        "Martes: Cardio 15-20min",
+        "Miércoles: Tren superior 3x10",
+        "Jueves: Cardio 15-20min",
+        "Viernes: Tren inferior 3x10",
+        "Sábado: Caminata ligera 20min",
+        "Domingo: Descanso"
+      ],
+      intermedio: [
+        "Lunes: Full body 4x12",
+        "Martes: Cardio 25min",
+        "Miércoles: Tren superior 4x12",
+        "Jueves: HIIT 20min",
+        "Viernes: Tren inferior 4x12",
+        "Sábado: Cardio 25-30min",
+        "Domingo: Descanso activo"
+      ],
+      avanzado: [
+        "Lunes: Full body intenso 5x12",
+        "Martes: HIIT 30min",
+        "Miércoles: Tren superior 5x12",
+        "Jueves: Cardio 30min",
+        "Viernes: Tren inferior 5x12",
+        "Sábado: HIIT 30min",
+        "Domingo: Descanso"
+      ]
+    }
+  }
+};
+
+let historial = JSON.parse(localStorage.getItem('historialRutinas')) || [];
+
+function generarRutina() {
+    const nombre = document.getElementById('nombre').value;
+    const tipo = document.getElementById('tipoCuerpo').value;
+    const objetivo = document.getElementById('objetivo').value;
+    const nivel = document.getElementById('nivel').value;
+
+    if(!nombre || !tipo || !objetivo || !nivel){
+        alert('Por favor completa todos los campos.');
+        return;
+    }
+
+    const resultado = document.getElementById('resultado');
+    const mensaje = document.getElementById('mensajeResultado');
+    const planDiv = document.getElementById('planSemanal');
+    const metas = document.getElementById('metas');
+    const frase = document
